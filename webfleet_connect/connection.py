@@ -1,4 +1,5 @@
 import requests
+import urllib.parse
 from .webfleet_connect_error import WebfleetConnectError
 from .webfleet_connect_response import WebfleetConnectResponse
 from .format_handlers.csv_error_parser import CsvErrorParser
@@ -10,7 +11,8 @@ class Connection:
     self._error_parser = self._build_error_parser(session)
 
   def exec(self, url):
-    response = requests.get(url)
+    encoded_url = urllib.parse.quote_plus(url, safe=":/&=?")
+    response = requests.get(encoded_url)
     is_json = self._session.has_json()
     if self._is_error_found(response):
       raise WebfleetConnectError(response, url, is_json)
